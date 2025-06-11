@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from screeninfo import get_monitors
 
 
 @dataclass
@@ -37,3 +38,16 @@ class Color:
             and in_range(self.g, other.g, tolerance)
             and in_range(self.r, other.r, tolerance)
         )
+
+
+def position_converter(source_res: tuple[int, int], position: Position):
+    monitor = get_monitors()[0]
+    width_ratio = monitor.width / source_res[0]
+    height_ratio = monitor.height / source_res[1]
+
+    return Position(
+        int(position.x * width_ratio),
+        int(position.y * height_ratio),
+        int(position.max_dX * width_ratio),
+        int(position.max_dY * height_ratio),
+    )

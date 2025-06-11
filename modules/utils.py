@@ -26,10 +26,6 @@ def click_with_randomization(position: Position, mouse_button: MouseButton) -> N
     random_sleep(0.1, max_delta=0.2)
     __MOUSE_CONTROLLER.release(mouse_button)
 
-    # __MOUSE_CONTROLLER.position = (randomized_pos.x, randomized_pos.y)
-    # random_sleep(0.5)
-    # __MOUSE_CONTROLLER.click(mouse_button)
-
 
 def move_mouse(position: Position) -> None:
     __MOUSE_CURSOR.move_to((position.x, position.y), steady=True)
@@ -62,7 +58,6 @@ def get_color_in_position(pos: Position, region_size=3) -> Color:
 
     # Screenshot only the small region
     screenshot = pygui_screenshot(region=(left, top, region_size, region_size))
-    # screenshot.save(f"screenshot_{time.time()}.png")
 
     # Convert to OpenCV BGR
     image = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
@@ -89,6 +84,9 @@ def is_object_on_screen(object_template_path: str) -> bool:
 
         bf = cv2.BFMatcher()
         matches = bf.knnMatch(des1, des2, k=2)
+        
+        if not matches:
+            return False
 
         # Apply ratio test to filter good matches
         good = []

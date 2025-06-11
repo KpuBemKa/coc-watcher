@@ -7,15 +7,15 @@ from pynput.mouse import Button as MouseButton
 
 from . import utils
 from .pynput_singleton import MouseControllerSingleton, KeyboardControllerSingleton
-from .datas import Position, Color
+from .datas import Position, Color, position_converter
 
 
 class Coords:
-    ATTACK_BUTTON = Position(140, 1295, 100, 100)
-    FIND_MATCH_BUTTON = Position(1850, 860, 220, 90)
-    NEXT_BATTLE_BUTTON = Position(2370, 1100, 170, 70)
+    ATTACK_BUTTON = position_converter((2560, 1440), Position(140, 1295, 100, 100))
+    FIND_MATCH_BUTTON = position_converter((2560, 1440), Position(1850, 860, 220, 90))
+    NEXT_BATTLE_BUTTON = position_converter((2560, 1440), Position(2370, 1100, 170, 70))
 
-    SEARCH_CLOUD = Position(2219, 643)
+    SEARCH_CLOUD = position_converter((2560, 1440), Position(2219, 643))
 
 
 class Colors:
@@ -27,15 +27,20 @@ class StopRequestedException(Exception):
 
 
 class BattleFinder:
-    def __init__(self):
+    def __init__(self, ths_to_search):
         self.__keyboard = KeyboardControllerSingleton()
         self.__mouse = MouseControllerSingleton()
+        self.__ths = ths_to_search
 
         self.__started = False
         self.__stop_flag = False
         self.__worker_thread = threading.Thread(
-            name="ElixirFarmerThread", target=self.__worker, daemon=True
+            name="BattleFinderThread", target=self.__worker, daemon=True
         )
+
+        # print(
+        #     f"Cords:\n{Coords.ATTACK_BUTTON}\n{Coords.FIND_MATCH_BUTTON}\n{Coords.NEXT_BATTLE_BUTTON}\n{Coords.SEARCH_CLOUD}"
+        # )
 
     def start(self):
         if self.__started:
@@ -58,11 +63,11 @@ class BattleFinder:
             self.__start_battle()
             self.__wait_for_battle_start()
             self.__zoom_out()
-            
+
             utils.move_mouse(Coords.NEXT_BATTLE_BUTTON)
 
             while True:
-                if self.__is_enemy_th_in_range([10, 11, 12]):
+                if self.__is_enemy_th_in_range(self.__ths):
                     break
 
                 print("TH is not in the given range. Skipping...")
@@ -86,7 +91,7 @@ class BattleFinder:
         return False
 
     def __compare_enemy_th(self, th_index):
-        th_image_path = f"F:/dev/projects/coc_watcher/static/ths/th-{th_index}.png"
+        th_image_path = f"./static/ths/th-{th_index}.png"
 
         if not os.path.isfile(th_image_path):
             raise FileNotFoundError(f"{th_image_path} doesn't exist.")
@@ -140,7 +145,7 @@ class BattleFinder:
         """
         if self.__stop_flag:
             raise StopRequestedException
-        
+
         utils.random_sleep(sleep_time, max_delta)
 
         if self.__stop_flag:
