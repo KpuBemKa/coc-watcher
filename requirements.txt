@@ -1,0 +1,9 @@
+argparse
+opencv-python
+numpy
+pyautogui
+pynput
+screeninfo
+
+pytweening
+selenium

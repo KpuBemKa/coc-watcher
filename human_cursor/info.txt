@@ -1,0 +1,5 @@
+This is a modified humancursor library.
+It wastes CPU cycles instead of sleeping as a workaround of minimum sleep time of several milliseconds.
+Also, some parts have been deleted.
+
+Link to the original library: https://pypi.org/project/HumanCursor/
