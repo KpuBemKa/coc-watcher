@@ -59,7 +59,7 @@ def main():
         listener.start()
 
         print(f"Searching for the next THs: {'; '.join(th_indexes)};")
-        print("Ready to search for a battle. Enter the game ,and press F6 to start.")
+        print("Ready to search for a battle. Enter the game, and press F6 to start.")
 
         while True:
             if hardstop_flag:
