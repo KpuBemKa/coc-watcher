@@ -2,13 +2,41 @@ from dataclasses import dataclass
 from screeninfo import get_monitors
 
 
-@dataclass
+# @dataclass
 class Position:
-    x: int
-    y: int
+    def __init__(self, x: int, y: int, max_dX: int = 0, max_dY: int = 0):
+        self.__x = x
+        self.__y = y
 
-    max_dX: int = 0
-    max_dY: int = 0
+        self.__max_dX = max_dX
+        self.__max_dY = max_dY
+
+        # top-left x position, top-left y position, width, height
+        self.__bounding_box = (x - max_dX, y - max_dY, x + max_dX, y + max_dY)
+
+    @property
+    def x(self):
+        return self.__x
+
+    @property
+    def y(self):
+        return self.__y
+
+    @property
+    def max_dX(self):
+        return self.__max_dX
+
+    @property
+    def max_dY(self):
+        return self.__max_dY
+
+    def get_bounding_box(self):
+        """Returns the X & Y coordinates of the top left corner of a box containing the positions described by this object
+
+        Returns:
+            tuple[int, int, int, int]: X coordinate of the top-left corner, Y coordinate of the top-left corner, box width, box height
+        """
+        return self.__bounding_box
 
 
 @dataclass

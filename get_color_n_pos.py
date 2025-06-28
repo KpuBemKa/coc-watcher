@@ -5,6 +5,7 @@ import time
 import numpy as np
 
 from pynput import keyboard
+from pynput import mouse
 
 def get_pixel_color_and_position():
     x, y = pyautogui.position()
@@ -14,6 +15,11 @@ def get_pixel_color_and_position():
     print(f"F7 pressed! Mouse at ({x}, {y}) — Pixel color (BGR): ({b}, {g}, {r})")
 
 def on_press(key):
+    if key == keyboard.Key.f6:
+        mouse_controller = mouse.Controller()
+        (x, y) = mouse_controller.position
+        mouse_controller.position = (x - 200, y)
+        
     if key == keyboard.Key.f7:
         get_pixel_color_and_position()
 

@@ -17,6 +17,12 @@ __MOUSE_CURSOR = SystemCursor()
 __KEYBOARD = KeyboardControllerSingleton()
 
 
+def is_mouse_inside_box(pos_x, pos_y, width, height):
+    (x, y) = __MOUSE_CONTROLLER.position
+    # print(pos_x, pos_y, width, height, x, y)
+    return (x >= pos_x and x <= pos_x + width) and (y >= pos_y and y <= pos_y + height)
+
+
 def click_with_randomization(position: Position, mouse_button: MouseButton) -> None:
     randomized_pos = randomize_position(position)
 

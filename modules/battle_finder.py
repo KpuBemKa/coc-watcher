@@ -15,11 +15,12 @@ class Coords:
     FIND_MATCH_BUTTON = position_converter((2560, 1440), Position(1850, 860, 220, 90))
     NEXT_BATTLE_BUTTON = position_converter((2560, 1440), Position(2370, 1100, 170, 70))
 
-    SEARCH_CLOUD = position_converter((2560, 1440), Position(2219, 643))
+    END_BATTLE_BUTTON = position_converter((2560, 1440), Position(129, 1163, 3, 3))
 
 
 class Colors:
-    SEARCH_CLOUD = Color(102, 79, 76)
+    # for some reason, this color can randomly change
+    END_BATTLE_BUTTON = [Color(14, 13, 207), Color(12, 11, 183)]
 
 
 class StopRequestedException(Exception):
@@ -34,9 +35,6 @@ class BattleFinder:
 
         self.__started = False
         self.__stop_flag = False
-        self.__worker_thread = threading.Thread(
-            name="BattleFinderThread", target=self.__worker, daemon=True
-        )
 
         # print(
         #     f"Cords:\n{Coords.ATTACK_BUTTON}\n{Coords.FIND_MATCH_BUTTON}\n{Coords.NEXT_BATTLE_BUTTON}\n{Coords.SEARCH_CLOUD}"
@@ -48,6 +46,9 @@ class BattleFinder:
 
         self.__stop_flag = False
         self.__started = True
+        self.__worker_thread = threading.Thread(
+            name="BattleFinderThread", target=self.__worker, daemon=True
+        )
         self.__worker_thread.start()
 
     def stop(self):
@@ -71,6 +72,7 @@ class BattleFinder:
                     break
 
                 print("TH is not in the given range. Skipping...")
+                self.__sleep_with_check(0.1)
 
                 self.__click_next_battle()
                 self.__wait_for_battle_start()
@@ -86,7 +88,7 @@ class BattleFinder:
             if self.__compare_enemy_th(th_index):
                 return True
             print(f"This TH is not {th_index}")
-            self.__sleep_with_check(0)
+            self.__sleep_with_check(0.1)
 
         return False
 
@@ -106,15 +108,19 @@ class BattleFinder:
     def __wait_for_battle_start(self):
         while True:
             time.sleep(1)
+            self.__sleep_with_check(0.1)
 
-            if not Colors.SEARCH_CLOUD.is_similar(
-                utils.get_color_in_position(Coords.SEARCH_CLOUD)
-            ):
-                break
-
-        # self.__sleep_with_check(1)
+            for color in Colors.END_BATTLE_BUTTON:
+                actual_color = utils.get_color_in_position(Coords.END_BATTLE_BUTTON)
+                # print(actual_color)
+                if color.is_similar(actual_color):
+                    return
 
     def __click_next_battle(self):
+        if utils.is_mouse_inside_box(*Coords.NEXT_BATTLE_BUTTON.get_bounding_box()):
+            self.__mouse.click(MouseButton.left)
+            return
+
         utils.click_with_randomization(Coords.NEXT_BATTLE_BUTTON, MouseButton.left)
 
     def __zoom_out(self):
